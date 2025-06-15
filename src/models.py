@@ -6,6 +6,7 @@
 from datetime import datetime
 from pydantic import BaseModel, HttpUrl, Field, field_validator
 from pathlib import Path
+from typing import Optional
 
 def main():
     print("Hello from lnkd-report.modules")
@@ -15,16 +16,25 @@ class Account(BaseModel):
     linkedin_url: HttpUrl = Field(..., description="Full LinkedIn profile URL")
     tags_to_watch: list[str] = Field(default_factory=list, description="List of hashtags to filter for")
 
+
+
 class Post(BaseModel):
     post_id: str
     author: str
-    source_account: str
     date: datetime
-    content: str = Field(default="NO_CONTENT")
+    content: str
     post_url: str
     hashtags: list[str] = []
+    source_account: str
     is_repost: bool = False
-    original_author: str | None = None
+    original_author: Optional[str] = None
+
+    @classmethod
+    def from_content(cls, **kwargs) -> "Post":
+        content = kwargs.get("content", "")
+        hashtags = [word for word in content.split() if word.startswith("hashtag#")]
+        kwargs["hashtags"] = hashtags
+        return cls(**kwargs)
 
 class ConfigFile(BaseModel):
     """

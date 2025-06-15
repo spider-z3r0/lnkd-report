@@ -31,7 +31,20 @@ def find_posts(accounts: list[Account]) -> list[Post]:
                 try:
                     post_id = post_el.get_attribute("data-urn") or "unknown-post-id"
 
-                    # Try expanding "see more"
+                    # Check for repost
+                    header = post_el.query_selector("span.update-components-header__text-view")
+                    is_repost = header and "reposted this" in header.text_content().lower()
+                    original_author = None
+                    if is_repost:
+                        orig_author_el = post_el.query_selector("a.update-components-actor__meta-link span span[aria-hidden='true']")
+                        if orig_author_el:
+                            original_author = orig_author_el.text_content().strip()
+                    else:
+                        is_repost = False
+                        original_author = None
+
+
+                    # Expand "see more"
                     try:
                         see_more_btn = post_el.query_selector("button.feed-shared-inline-show-more-text__see-more-less-toggle")
                         if see_more_btn:
@@ -67,10 +80,12 @@ def find_posts(accounts: list[Account]) -> list[Post]:
                         post_url=post_url,
                         hashtags=hashtags,
                         source_account=account.name,
+                        is_repost=is_repost,
+                        original_author=original_author
                     )
 
                     posts.append(post)
-                    print(f"✅ Added post: {post_id}")
+                    print(f"✅ Added post: {post_id} {'(repost)' if is_repost else ''}")
 
                 except Exception as e:
                     print(f"⚠️ Error parsing post: {e}")

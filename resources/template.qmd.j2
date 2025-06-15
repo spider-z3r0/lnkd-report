@@ -1,0 +1,18 @@
+---
+title: "LinkedIn Post Report - {{ report_date }}"
+format: html
+---
+
+## Posts by Author
+
+{% for post in posts %}
+### {{ post.author }}
+- **Date**: {{ post.date }}
+- **URL**: [View Post]({{ post.post_url }})
+- **Hashtags**: {{ post.hashtags | join(", ") if post.hashtags else "None" }}
+
+**Content:**
+{{ post.content }}
+
+---
+{% endfor %}
