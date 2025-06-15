@@ -25,7 +25,7 @@ def main():
 
     with open(y_path.parent / "posts.csv", "w") as f:
         f.writelines(
-            [p.model_dump_json() for p in posts]
+            [p.model_dump_json(indent=2) for p in posts]
             )
 
 

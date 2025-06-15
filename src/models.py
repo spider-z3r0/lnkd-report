@@ -15,15 +15,16 @@ class Account(BaseModel):
     linkedin_url: HttpUrl = Field(..., description="Full LinkedIn profile URL")
     tags_to_watch: list[str] = Field(default_factory=list, description="List of hashtags to filter for")
 
-
 class Post(BaseModel):
-    post_id: str = Field(..., description="Unique identifier for the post")
-    author: str = Field(..., description="Author name")
-    date: datetime = Field(..., description="Datetime of the post")
-    content: str = Field(..., description="Text content of the post")
-    post_url: HttpUrl = Field(..., description="Direct URL to the post")
-    hashtags: list[str] = Field(default_factory=list, description="List of hashtags in the post")
-    source_account: str = Field(..., description="Name of the account this post was scraped from")
+    post_id: str
+    author: str
+    source_account: str
+    date: datetime
+    content: str = Field(default="NO_CONTENT")
+    post_url: str
+    hashtags: list[str] = []
+    is_repost: bool = False
+    original_author: str | None = None
 
 class ConfigFile(BaseModel):
     """
